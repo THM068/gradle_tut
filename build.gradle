@@ -62,3 +62,16 @@ task putOnShoes {
 		println 'Putting on shoes'
 	}
 }
+
+task eatBreakfast {
+	finalizedBy 'brushYourTeeth'
+	doLast {
+		println 'Eat munch breakfast ...'
+	}
+}
+
+task brushYourTeeth {
+	doLast {
+		println 'Brushie brushie brushie ...>'
+	}
+}
