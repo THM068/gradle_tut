@@ -1,0 +1,8 @@
+task hello {
+    description "Hello world description"
+    group "Hello world group"
+    doLast {
+        println 'Hello world ....'
+    }
+}
+
