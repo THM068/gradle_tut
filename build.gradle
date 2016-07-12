@@ -56,6 +56,7 @@ task putOnSocks {
 	}
 }
 
+
 task putOnShoes {
 	dependsOn 'putOnSocks'
 	doLast {
@@ -75,3 +76,128 @@ task brushYourTeeth {
 		println 'Brushie brushie brushie ...>'
 	}
 }
+
+
+task takeShower {
+	doLast {
+		println 'Taking a shower'
+	}
+}
+
+task putOnFragrance {
+	shouldRunAfter 'takeShower'
+    doLast {
+        println 'Putting on fragrance'
+    }
+}
+
+task getReady {
+    dependsOn = [ 'takeShower', 'eatBreakfast', 'putOnShoes']
+}
+
+putOnShoes.mustRunAfter takeShower
+
+
+task getEquipped {
+    dependsOn tasks.matching { task ->
+        task.name.startsWith('putOn')
+    }
+    doLast {
+        println 'All geared up'
+    }
+}
+
+//-----------------------------
+task brew {
+    doLast {
+        println "Brewing. Drip, drip, drip."
+    }
+}
+
+task pour {
+    dependsOn 'brew'
+    doLast {
+        println "Pouring. Glug, glug, glug."
+    }
+}
+
+task drink {
+    dependsOn 'pour'
+    mustRunAfter 'addSweetener'
+    doLast {
+        println "Drinking. Gulp, gulp, gulp."
+    }
+}
+
+task addSweetener {
+    dependsOn 'pour'
+    doLast {
+        println "Adding sweetener. Stir, stir, stir."
+    }
+}
+
+task blackCoffee {
+    dependsOn 'drink'
+    doLast {
+        println "Mmmm, bitter! just how I like it."
+    }
+}
+
+task sweetCoffee {
+    dependsOn = ['drink', 'addSweetener']
+    doLast {
+        println "Mmmm, sweet! just how I like it."
+    }
+}
+
+task copyImages(type: Copy) {
+	from 'images'
+    include '*ext2.txt'
+	into 'build'
+}
+
+task copyImageFolder(type: Copy) {
+    from('images') {
+        include '*.jpg'
+        into 'jpg'
+    }
+
+    from('images') {
+        include '*.txt'
+        into 'txt'
+    }
+
+    into 'build' //destination directory
+}
+
+task zipImages(type: Zip) {
+    baseName = 'images'
+    destinationDir = file('build')
+    from 'images'
+}
+
+task deleteBuild(type: Delete) {
+    delete 'build'
+}
+
+task copyWeb(type: Copy) {
+    from('src/web/images') {
+        include '*.jpg'
+        into 'web/images'
+    }
+
+    from('src/web') {
+        include '*.html'
+        into 'web'
+    }
+
+    from('src/docs') {
+        include '*.txt'
+        into 'web/hep'
+
+    }
+
+    into 'build'
+}
+
+task bundleWeb(type: Copy)
