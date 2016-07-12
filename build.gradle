@@ -1,3 +1,8 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'spring-boot'
+
 buildscript {
 	ext {
 		springBootVersion = '1.3.6.RELEASE'
@@ -6,14 +11,11 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 	}
 }
 
-apply plugin: 'java'
-apply plugin: 'groovy'
-apply plugin: 'eclipse'
-apply plugin: 'spring-boot' 
+
 
 jar {
 	baseName = 'demo'
@@ -31,7 +33,8 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('org.springframework.boot:spring-boot-actuator-docs')
 	compile('org.springframework.boot:spring-boot-starter-remote-shell')
-	testCompile('org.springframework.boot:spring-boot-starter-test') 
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile("org.codehaus.groovy:groovy-all:2.4.3")
 }
 
 
@@ -193,11 +196,49 @@ task copyWeb(type: Copy) {
 
     from('src/docs') {
         include '*.txt'
-        into 'web/hep'
-
+        into 'web/help'
     }
 
     into 'build'
 }
 
-task bundleWeb(type: Copy)
+task bundleWeb(type: Zip, dependsOn: copyWeb){
+    baseName = 'web'
+    destinationDir = file('build')
+
+    from('build/web') {
+        include 'help/**'
+    }
+
+    from('build/web') {
+        include '*.html'
+    }
+}
+
+task unpackBundle(type: Copy, dependsOn: bundleWeb) {
+    from zipTree('build/web.zip')
+    into 'build/exploded'
+}
+
+task deleteHelp(type: Delete, dependsOn: copyWeb) {
+    delete 'build/web/help'
+}
+
+ext {
+    greeting='Hello from the buildscript'
+}
+
+task printGreetings {
+    doLast {
+        println greeting
+    }
+    println 'This is run during the configuration phase'
+}
+
+task helloName(type: com.sky.HelloName) {
+    setName 'Kerrie Channer'
+    //enabled = false
+}
+
+task helloTask(type: com.sky.HelloTask)
+

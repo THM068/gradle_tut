@@ -1,0 +1,3 @@
+println 'I am called at initialization phase'
+println "The rootProject is ${rootProject.name}"
+println "The build file name is ${rootProject.buildFileName}"
